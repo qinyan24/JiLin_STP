@@ -8,7 +8,7 @@ import java.util.Map;
 @Service
 public class WeatherService {
     private static final String API_KEY = "b0ed499a098b16b670665cef7beaf207";
-    private static final String API_URL = "https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=metric&lang=zh_cn";
+    private static final String API_URL = "...";
 
     public Map<String, Object> getWeatherData(String city) {
         String url = String.format(API_URL, city, API_KEY);
