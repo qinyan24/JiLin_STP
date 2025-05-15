@@ -16,8 +16,8 @@ import java.util.List;
 
 @Service
 public class BaiduMapService {
-    private static final String BAIDU_PLACE_API = "https://api.map.baidu.com/place/v2/search";
-    private static final String BAIDU_MAP_AK = "zFa4GBOzyyoYSu9ePlMjle1eNAezdrtP";  // 你的百度地图 API Key
+    private static final String BAIDU_PLACE_API = "...";
+    private static final String BAIDU_MAP_AK = "...";  
 
     @Autowired
     private ScenicSpotDao scenicSpotDao;
