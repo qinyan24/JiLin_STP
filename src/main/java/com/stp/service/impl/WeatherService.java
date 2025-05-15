@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Service
 public class WeatherService {
-    private static final String API_KEY = "b0ed499a098b16b670665cef7beaf207";
+    private static final String API_KEY = "...";
     private static final String API_URL = "...";
 
     public Map<String, Object> getWeatherData(String city) {
