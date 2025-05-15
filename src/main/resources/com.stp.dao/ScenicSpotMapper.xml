@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stp.dao.ScenicSpotDao">
+
+    <!-- 查询所有景点 -->
+    <select id="getAllScenicSpots" resultType="ScenicSpot">
+        SELECT * FROM scenic_spots
+    </select>
+
+    <select id="getALlScenicSpotCard" resultType="ScenicSpot">
+        SELECT id, name, description,img_url FROM scenic_spot
+    </select>
+
+    <!-- 根据ID查询景点 -->
+    <select id="getScenicSpotById" resultType="ScenicSpot">
+        SELECT * FROM scenic_spots WHERE id = #{id}
+    </select>
+
+
+    <select id="getPagedScenicSpotCard" resultType="com.stp.domain.ScenicSpot">
+        SELECT id, name, description, image_url, ticket_price, open_time
+        FROM scenic_spots
+                 LIMIT #{offset}, #{size}
+    </select>
+
+
+
+    <!-- 插入景点 -->
+    <insert id="insertScenicSpot" parameterType="ScenicSpot">
+        INSERT INTO scenic_spots (name, ticket_price, open_time, description, image_url)
+        VALUES (#{name}, #{ticketPrice}, #{openTime}, #{description}, #{imageUrl})
+    </insert>
+
+    <!-- 更新景点 -->
+    <update id="updateScenicSpot" parameterType="ScenicSpot">
+        UPDATE scenic_spots
+        SET name = #{name}, ticket_price = #{ticketPrice}, open_time = #{openTime}, description = #{description}, image_url = #{imageUrl}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除景点 -->
+    <delete id="deleteScenicSpot" parameterType="Long">
+        DELETE FROM scenic_spots WHERE id = #{id}
+    </delete>
+
+</mapper>

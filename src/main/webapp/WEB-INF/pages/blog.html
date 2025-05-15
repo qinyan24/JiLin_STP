@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${blog?.title}">博客详情</title>
+  <!-- 引入 Bootstrap 样式 -->
+  <link th:href="@{/css/bscss/bootstrap.css}" rel="stylesheet">
+  <script th:src="@{/js/bsjs/bootstrap.bundle.js}"></script>
+  <script th:src="@{/js/bsjs/bootstrap.js}"></script>
+  <link rel="stylesheet" th:href="@{/css/blog.css}">
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">吉游智行</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/homepage}" id="home-link">主页</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/summary_attractions}">旅游景点汇总</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">发表博客</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/myself1}">我的</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <article class="card shadow-lg p-4">
+    <img th:src="@{${blog.imageUrl}}" class="img-fluid rounded mb-4" alt="博客封面" style="max-height: 400px; width: 100%; object-fit: cover;">
+    <h1 class="mb-3" th:text="${blog.title}">博客标题</h1>
+    <p class="text-muted">作者: <span th:text="${blog.authorName}">匿名</span> | 发布于: <span th:text="${#dates.format(blog.createTime, 'yyyy-MM-dd HH:mm')}">日期</span></p>
+    <button id="favorite-btn" class="btn btn-outline-danger">收藏</button>
+    <hr>
+    <div class="blog-content" th:utext="${blog.content}">博客内容</div>
+  </article>
+
+  <!--评论-->
+  <div class="comment-section">
+    <h3>网友评论</h3>
+
+    <!-- 评论展示区 -->
+    <div id="comments-container">
+      <div th:each="comment : ${comments}">
+        <div class="comment-card mb-3 p-3 border rounded">
+          <p><strong th:text="${comment.username}">用户名</strong>: <span th:text="${comment.content}">评论内容</span></p>
+          <p class="text-muted" th:text="${#dates.format(comment.createTime, 'yyyy-MM-dd HH:mm:ss')}">发表日期</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 评论表单 -->
+    <div class="comment-form">
+      <h4>留下您的评论：</h4>
+      <form id="comment-form">
+        <textarea id="comment-content" class="form-control" rows="4" placeholder="请输入您的评论" required></textarea>
+        <button type="submit" class="btn btn-primary mt-3">提交评论</button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // 处理收藏功能
+    const favoriteBtn = document.getElementById("favorite-btn");
+    favoriteBtn.addEventListener("click", function() {
+      alert("已收藏！");
+      favoriteBtn.classList.toggle("btn-danger");
+      favoriteBtn.classList.toggle("btn-outline-danger");
+      favoriteBtn.textContent = favoriteBtn.classList.contains("btn-danger") ? "已收藏" : "收藏";
+    });
+
+    //评论区
+    $(document).ready(function () {
+      // 提交评论
+      $('#comment-form').submit(function (e) {
+        e.preventDefault();
+
+        var content = $('#comment-content').val();
+        var blogId = [[${blog.id}]]; // 将博客的ID传递到JS
+
+        if (content) {
+          $.ajax({
+            type: 'POST',
+            url: '[[@{/submit-blogComment}]]', // 提交评论的URL
+            data: {
+              content: content,
+              blogId: blogId
+            },
+            success: function () {
+              // 评论提交成功后清空输入框并重新加载评论
+              $('#comment-content').val('');
+              loadComments();
+            },
+            error: function () {
+              alert('评论提交失败，请稍后再试');
+            }
+          });
+        }
+      });
+
+      // 加载评论
+      function loadComments() {
+        var blogId = [[${blog.id}]]; // 获取当前博客的ID
+
+        $.get('/JiLin_STP/blog/' + blogId + '/comments', function (data) {
+          var commentsHtml = '';
+
+          if(data == null){
+            commentsHtml += '<div class="comment-card mb-3 p-3 border rounded">';
+            commentsHtml += '<p><strong>暂无用户评论</strong> </p>';
+            commentsHtml += '</div>';
+          }
+          else {
+            data.forEach(function (comment) {
+              commentsHtml += '<div class="comment-card mb-3 p-3 border rounded">';
+              commentsHtml += '<p><strong>' + comment.username + ':</strong> ' + comment.content + '</p>';
+              commentsHtml += '<p class="text-muted">' + new Date(comment.createTime).toLocaleString() + '</p>'; // 格式化日期
+              commentsHtml += '</div>';
+            });
+          }
+          $('#comments-container').html(commentsHtml);
+        });
+      }
+
+      // 初始化加载评论
+      loadComments();
+    });
+
+  });
+</script>
+</body>
+</html>

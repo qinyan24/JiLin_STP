@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
+    <title>吉游智行</title>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img th:src="@{/image/index/logo.png}" width="100" height="100" alt="logo">
+        </div>
+    </header>
+
+    <section class="index">
+        <div class="index-content">
+            <h1>吉游智行</h1>
+            <p>智慧旅游平台专注于为用户提供吉林省旅游的一站式服务，包括景点信息查询、门票预订、行程规划、评价分享等功能。平台界面简洁友好，支持个性化定制旅行需求，
+                为用户打造便捷、高效的出行体验，是探索吉林文化与自然风光的理想选择。</p>
+            <a th:href="@{/login}"><button>进入网站</button> </a>
+        </div>
+        <div class="images">
+            <div class="img-6"></div>
+            <div class="img-5"></div>
+            <div class="img-4"></div>
+            <div class="img-3"></div>
+            <div class="img-2"></div>
+            <div class="img-1"></div>
+        </div>
+    </section>
+
+    <script>
+        gsap.from('.img-1',1.2,{opacity:0,y:150,delay:0.5})
+        gsap.from('.img-2',1.2,{opacity:0,y:150,delay:0.75})
+        gsap.from('.img-3',1.2,{opacity:0,y:150,delay:1})
+        gsap.from('.img-4',1.2,{opacity:0,y:150,delay:1.25})
+        gsap.from('.img-5',1.2,{opacity:0,y:150,delay:1.5})
+        gsap.from('.img-6',1.2,{opacity:0,y:150,delay:1.75})
+        gsap.from('h1',1.2,{opacity:0,y:-80,delay:1.4})
+        gsap.from('p',1.2,{opacity:0,y:-80,delay:1.25})
+        gsap.from('button',1.2,{opacity:0,y:-80,delay:1})
+
+        const menu = document.querySelector('.menu');
+        const toggle = document.getElementById('toggle');
+
+        toggle.onclick = function (){
+            menu.classList.toggle('active');
+        }
+
+    </script>
+
+</body>
+</html>

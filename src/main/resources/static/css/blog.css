@@ -1,0 +1,25 @@
+.container {
+    max-width: 800px;
+}
+
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.blog-content {
+    line-height: 1.8;
+}
+
+.comments {
+    margin-top: 20px;
+}
+
+.comment {
+    background-color: #f8f9fa;
+}
+
+#favorite-btn {
+    float: right;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,301 @@
+/* Reset some basic elements to avoid inconsistencies across browsers */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* 轮播图的样式 */
+.carousel-item img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* 导航栏 */
+.navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a {
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.navbar a:hover {
+    color: #007bff;
+}
+
+.navbar .navbar-nav .nav-item {
+    margin-left: 20px;
+}
+
+/* 搜索框 */
+.search-section {
+    background-color: #ffffff;
+    padding: 50px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-section h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.search-section .input-group {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-section .input-group input {
+    border-radius: 50px;
+    padding: 15px 20px;
+    border: 1px solid #ddd;
+}
+
+.search-section .input-group button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-section .input-group button:hover {
+    background-color: #0056b3;
+}
+
+/* 推荐景点 */
+.recommended-sites {
+    background-color: #ffffff;
+    padding: 50px 20px 20px;
+}
+
+.recommended-sites h3 {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+.recommended-sites .card {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.recommended-sites .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.recommended-sites .card img {
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.recommended-sites .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.recommended-sites .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.recommended-sites .card-text {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 20px;
+    /*white-space: nowrap;*/
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%; /* 保证内容不会超出 */
+    height: 80px; /* 限制描述的最大高度 */
+}
+
+.abcd{
+    margin-top: 1rem !important;
+}
+
+.recommended-sites .btn {
+    background-color: #007bff;
+    color: white;
+    border-radius: 50px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+}
+
+.recommended-sites .btn:hover {
+    background-color: #0056b3;
+}
+
+/* 博客推荐 */
+.blog-section {
+    background-color: #f9f9f9;
+    padding: 50px 0;
+}
+
+.blog-section h3 {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+.blog-section .card {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.blog-section .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.blog-section .card img {
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.blog-section .card-body {
+    padding: 20px;
+}
+
+.blog-section .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.blog-section .card-text {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.blog-section .btn {
+    background-color: #007bff;
+    color: white;
+    border-radius: 50px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+}
+
+.blog-section .btn:hover {
+    background-color: #0056b3;
+}
+
+/* 页脚 */
+footer {
+    background-color: #343a40;
+    color: #ffffff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+footer p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .search-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .recommended-sites .row,
+    .blog-section .row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .recommended-sites .col-md-4,
+    .blog-section .col-md-4 {
+        max-width: 90%;
+        margin-bottom: 30px;
+    }
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 90%; /* 确保浮窗位于输入框下方 */
+    left: 22.5%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd; /* 边框颜色 */
+    border-radius: 8px; /* 圆角 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 阴影 */
+    max-height: 300px; /* 限制最大高度 */
+    overflow-y: auto; /* 支持滚动 */
+    width: 55%; /* 宽度和输入框一样 */
+    display: none; /* 默认隐藏 */
+    z-index: 10; /* 保证浮窗在输入框上方 */
+    padding: 5px 0;
+    margin-top: 8px; /* 给输入框和浮窗之间增加一点间距 */
+}
+.search-dropdown ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+.search-dropdown li {
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.search-dropdown li:hover {
+    background-color: #f8f8f8; /* 鼠标悬停时改变背景色 */
+}
+
+/* 当输入框获得焦点时，浮窗的边框和背景色变化 */
+#search-query:focus + .search-dropdown {
+    border-color: #0056b3; /* 焦点时的边框颜色 */
+    background-color: #f9f9f9; /* 焦点时的背景色 */
+}
+
+

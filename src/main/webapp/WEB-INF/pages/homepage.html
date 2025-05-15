@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <link th:href="@{/css/bscss/bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/css/homepage.css}" rel="stylesheet">
+    <script th:src="@{/js/bsjs/bootstrap.bundle.js}"></script>
+    <script th:src="@{/js/bsjs/bootstrap.js}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">吉游智行</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">主页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/summary_attractions}">旅游景点汇总</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{createBlog}">发表博客</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/auth/myself}">我的</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 轮播图 -->
+<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img th:src="@{/image/homepage/stp/cbs/tc2.jpeg}" class="d-block w-100"
+                 alt="吉林旅游">
+        </div>
+        <div class="carousel-item">
+            <img th:src="@{/image/homepage/stp/jyt/jyt6.jpeg}" class="d-block w-100"
+                 alt="吉林风景">
+        </div>
+        <div class="carousel-item">
+            <img th:src="@{/image/homepage/stp/lfs/lfs4.jpeg}" class="d-block w-100"
+                 alt="吉林文化">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+<!-- 搜索框 -->
+<section class="search-section text-center my-5">
+    <div class="container">
+        <h2>寻找你喜欢的景点</h2>
+        <div class="input-group mb-3 w-75  mx-auto position-relative">
+            <input type="text" class="form-control" id="search-query" placeholder="搜索景点" aria-label="搜索" aria-describedby="search-button">
+            <button class="btn btn-primary" type="button" id="search-button">搜索</button>
+        </div>
+        <!-- 浮动的搜索结果浮窗 -->
+        <div id="search-results" class="search-dropdown" style="display: none;">
+            <!-- 这里会显示搜索结果 -->
+        </div>
+    </div>
+</section>
+
+<!-- 推荐景点 -->
+<section class="recommended-sites container my-5">
+    <h3 class="text-center mb-4">推荐景点</h3>
+        <div id="scenic-container" class="row"> <!-- 添加容器方便ajax填充 -->
+            <!-- 初始服务端渲染（可选） -->
+            <div th:each="spot : ${scenicSpotsList}" class="col-md-4 mb-4">
+                <div class="card">
+                    <img th:src="${spot.imageUrl}" class="card-img-top" alt="景点图片"> <!-- 动态图片地址 -->
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${spot.name}">景点名称</h5> <!-- 修正为spot -->
+                        <p class="card-text" th:text="${spot.description}">景点描述</p>
+                        <a th:href="@{/scenic_spot/{id}(id=${spot.id})}" class="btn btn-primary">了解更多</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div class="abcd container mt-5">
+        <!-- 分页 -->
+        <div class="d-flex justify-content-center mb-3">
+            <ul class="pagination" id="pagination">
+                <!-- 示例分页按钮，可以动态填充 -->
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+            </ul>
+        </div>
+
+        <!-- 跳转到页码 -->
+        <div class="d-flex justify-content-center align-items-center">
+            <label for="pageInput" class="text-muted mr-2" style="font-size: 1.0rem;">跳转到页码:</label>
+            <div class="input-group" style="max-width: 280px;">
+                <input type="number" id="pageInput" class="form-control" style="font-size: 0.9rem; height: 38px; border-radius: 20px;" min="1" placeholder="页码">
+                <div class="input-group-append">
+                    <button class="btn btn-gradient px-3" id="jumpButton" onclick="jumpToPage()" style="border-radius: 20px; background: linear-gradient(45deg, #007bff, #007bff); color: white; border: none; font-size: 0.9rem; height: 38px;">
+                        跳转
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</section>
+
+<!-- 博客推荐 -->
+<section class="recommended-sites container my-5">
+    <h3 class="text-center mb-4">推荐博客</h3>
+    <div id="blog-container" class="row"> <!-- 添加容器方便ajax填充 -->
+        <!-- 初始服务端渲染（可选） -->
+        <div th:each="blog : ${blogList}" class="col-md-4 mb-4">
+            <div class="card">
+                <img th:src="${blog.imageUrl}" class="card-img-top" alt="博客封面"> <!-- 动态图片地址 -->
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${blog.title}">博客标题</h5>
+                    <p class="card-text text-truncate" th:text="${blog.content}">博客内容摘要</p>
+                    <p class="text-muted" style="font-size: 0.9rem;">
+                        作者: <span th:text="${blog.authorName}">匿名</span> | 发布于: <span th:text="${#dates.format(blog.createTime, 'yyyy-MM-dd')}">日期</span>
+                    </p>
+                    <a th:href="@{/blog/{id}(id=${blog.id})}" class="btn btn-primary">阅读更多</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分页 -->
+    <div class="abcd container mt-5">
+        <div class="d-flex justify-content-center mb-3">
+            <ul class="pagination" id="blog-pagination">
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+            </ul>
+        </div>
+
+        <!-- 跳转到页码 -->
+        <div class="d-flex justify-content-center align-items-center">
+            <label for="blogPageInput" class="text-muted mr-2" style="font-size: 1.0rem;">跳转到页码:</label>
+            <div class="input-group" style="max-width: 280px;">
+                <input type="number" id="blogPageInput" class="form-control" style="font-size: 0.9rem; height: 38px; border-radius: 20px;" min="1" placeholder="页码">
+                <div class="input-group-append">
+                    <button class="btn btn-gradient px-3" id="blogJumpButton" onclick="jumpToBlogPage()" style="border-radius: 20px; background: linear-gradient(45deg, #007bff, #007bff); color: white; border: none; font-size: 0.9rem; height: 38px;">
+                        跳转
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 页脚 -->
+<footer class="bg-dark text-white text-center py-3">
+    <p>&copy; 2025 吉林省旅游平台 | 吉游智行</p>
+</footer>
+
+<script>
+
+
+    function loadPage(page = 1) {
+        const size = 3;
+
+        $.ajax({
+            url:"[[@{/getScenicSpotCard}]]",
+            method:'POST',
+            data: { page: page, size: size },
+            // contentType: 'application/json',
+            success: function(data) {
+                const scenicSpots = data.scenicSpots;
+                const currentPage = data.currentPage;
+                const totalPages = data.totalPages;
+
+                let container = $('#scenic-container');
+
+                container.empty();
+                $('#pagination').empty();
+
+
+                // 遍历数据生成卡片
+                data.scenicSpots.forEach(function(spot) {
+                    let cardHtml = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img src="/JiLin_STP/${spot.imageUrl}" class="card-img-top" alt="${spot.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${spot.name}</h5>
+                                <p class="card-text">${spot.description}</p>
+                                <a href="/JiLin_STP/scenic-spot/${spot.id}" class="btn btn-primary">了解更多</a>
+                            </div>
+                        </div>
+                    </div>`;
+                    container.append(cardHtml);
+                });
+
+                // 渲染分页
+                const pagination = $('#pagination');
+
+                // 上一页按钮
+                if (currentPage > 1) {
+                    pagination.append(`
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="上一页" onclick="loadPage(${currentPage - 1}); return false;">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          `);
+                }
+
+                // 页码按钮，最多显示 5 个页码（包含前后 2 个页码），其余页码用省略号代替
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
+
+                if (currentPage > 3) {
+                    pagination.append(`
+            <li class="page-item"><a class="page-link" href="#" onclick="loadPage(1); return false;">1</a></li>
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+          `);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    pagination.append(`
+            <li class="page-item ${i === currentPage ? 'active' : ''}">
+              <a class="page-link" href="#" onclick="loadPage(${i}); return false;">${i}</a>
+            </li>
+          `);
+                }
+
+                if (currentPage < totalPages - 2) {
+                    pagination.append(`
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+            <li class="page-item"><a class="page-link" href="#" onclick="loadPage(${totalPages}); return false;">${totalPages}</a></li>
+          `);
+                }
+
+                // 下一页按钮
+                if (currentPage < totalPages) {
+                    pagination.append(`
+            <li class="page-item">
+              <a class="page-link" href="#" aria-label="下一页" onclick="loadPage(${currentPage + 1}); return false;">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          `);
+                }
+
+            },
+            error:function (xhr) {
+                alert("景点信息获取失败");
+            }
+        })
+
+    }
+
+
+    //景点分页
+    function jumpToPage() {
+        const pageInput = $('#pageInput').val();
+        const page = parseInt(pageInput, 10);
+
+        if (!isNaN(page) && page > 0) {
+            loadPage(page);
+        }
+    }
+
+
+    $(document).ready(function () {
+        loadPage();
+    })
+
+
+
+
+    //搜索功能
+    // 搜索按钮点击事件
+    $(document).ready(function () {
+        $('#search-button').click(function () {
+            var query = $('#search-query').val().trim();
+
+            if (query === "") {
+                alert("请输入搜索关键字！");
+                return;
+            }
+
+            // 使用 AJAX 请求发送搜索请求到后台
+            $.ajax({
+                url: '[[@{/search}]]',  // 请求的URL，确保与你的 SpringMVC 路径匹配
+                type: 'GET', // GET 请求
+                data: { query: query }, // 传递搜索关键字
+                success: function (data) {
+                    // 清空之前的搜索结果
+                    $('#search-results').empty();
+
+                    if (data.length === 0) {
+                        $('#search-results').html("<p>没有找到匹配的景点。</p>");
+                    } else {
+                        // 将搜索结果渲染成按钮
+                        var resultHtml = '';
+                        data.forEach(function(item) {
+                            resultHtml += "<button class='btn btn-outline-primary w-100 my-2' onclick='window.location.href=\"/JiLin_STP/scenic-spot/" + item.id + "\"'>" + item.name + "</button>";
+                        });
+                        $('#search-results').html(resultHtml);
+
+                        // console.log("/scenic-spot/" + item.id);
+                    }
+                    // 显示浮窗
+                    $('#search-results').show();
+                },
+                error: function (error) {
+                    alert("搜索请求失败，请重试！");
+                }
+            });
+        });
+        // 输入框失去焦点时隐藏搜索结果
+        $('#search-query').blur(function() {
+            setTimeout(function() {
+                $('#search-results').hide();
+            }, 20000);
+        });
+
+        // 鼠标点击搜索结果时，填充搜索框并隐藏结果
+        $('#search-results').on('click', 'li', function () {
+            $('#search-query').val($(this).text());
+            $('#search-results').hide();
+        });
+
+        // 防止点击浮窗时，blur 事件触发导致浮窗消失
+        $('#search-results').click(function(e) {
+            e.stopPropagation(); // 阻止事件冒泡，防止触发输入框的 blur 事件
+        });
+
+        //Enter提交
+        $('#search-query').keypress(function(e) {
+            if (e.which === 13) { // 监听 Enter 键
+                $('#search-button').click();
+            }
+        });
+    });
+
+
+    //博客的卡片
+    function loadBlogPage(page = 1) {
+        const size = 3;
+
+        $.ajax({
+            url: "[[@{/getBlogCard}]]",  // 这里确保和后端的接口路径匹配
+            method: 'POST',
+            data: { page: page, size: size },
+            success: function (data) {
+                const blogs = data.blogs;
+                const currentPage = data.currentPage;
+                const totalPages = data.totalPages;
+
+                let container = $('#blog-container');
+                container.empty();
+                $('#blog-pagination').empty();
+
+                // 遍历数据生成博客卡片
+                blogs.forEach(function (blog) {
+                    let shortContent = blog.content.length > 100 ? blog.content.substring(0, 100) + '...' : blog.content;
+                    let cardHtml = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                        <img src="/JiLin_STP/${blog.imageUrl}" class="card-img-top" alt="${blog.title}">
+                            <div class="card-body">
+                                <h5 class="card-title">${blog.title}</h5>
+                                <p class="card-text text-muted">作者: ${blog.authorName}</p>
+                                <p class="card-text">${shortContent}</p>
+                                <a href="/JiLin_STP/blog/${blog.id}" class="btn btn-primary">阅读全文</a>
+                            </div>
+                        </div>
+                    </div>`;
+                    container.append(cardHtml);
+                });
+
+                // 渲染分页
+                const pagination = $('#blog-pagination');
+
+                // 上一页按钮
+                if (currentPage > 1) {
+                    pagination.append(`
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadBlogPage(${currentPage - 1}); return false;">&laquo;</a>
+                    </li>
+                `);
+                }
+
+                // 页码按钮（最多显示 5 个页码）
+                let startPage = Math.max(1, currentPage - 2);
+                let endPage = Math.min(totalPages, currentPage + 2);
+
+                if (currentPage > 3) {
+                    pagination.append(`<li class="page-item"><a class="page-link" href="#" onclick="loadBlogPage(1); return false;">1</a></li>
+                                   <li class="page-item disabled"><span class="page-link">...</span></li>`);
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    pagination.append(`
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="loadBlogPage(${i}); return false;">${i}</a>
+                    </li>
+                `);
+                }
+
+                if (currentPage < totalPages - 2) {
+                    pagination.append(`<li class="page-item disabled"><span class="page-link">...</span></li>
+                                   <li class="page-item"><a class="page-link" href="#" onclick="loadBlogPage(${totalPages}); return false;">${totalPages}</a></li>`);
+                }
+
+                // 下一页按钮
+                if (currentPage < totalPages) {
+                    pagination.append(`
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadBlogPage(${currentPage + 1}); return false;">&raquo;</a>
+                    </li>
+                `);
+                }
+            },
+            error: function () {
+                alert("博客数据获取失败");
+            }
+        });
+
+
+    }
+
+    // 博客分页
+    function jumpToBlogPage(){
+        const pageInput = $('#pageInput').val();
+        const page = parseInt(pageInput, 10);
+
+        if (!isNaN(page) && page > 0) {
+            loadBlogPage(page);
+        }
+    }
+    $(document).ready(function () {
+        loadBlogPage();
+    })
+
+</script>
+
+<!-- 引入Bootstrap和自定义的JS -->
+<!--<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>-->
+</body>
+
+</html>

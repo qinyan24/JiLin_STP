@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/myself.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 引入 Bootstrap 样式 -->
+    <link th:href="@{/css/bscss/bootstrap.css}" rel="stylesheet">
+    <script th:src="@{/js/bsjs/bootstrap.bundle.js}"></script>
+    <script th:src="@{/js/bsjs/bootstrap.js}"></script>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">吉游智行</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/homepage}" id="home-link">主页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/summary_attractions}">旅游景点汇总</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{createBlog}">发表博客</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- 个人信息模块 -->
+    <div class="profile">
+        <div class="avatar">
+            <img th:src="@{${user.imageUrl}}" alt="用户头像" id="avatar-img">
+            <input type="file" id="avatar-upload" accept="image/*" style="display: none;" onchange="uploadAvatar()">
+            <button type="button" onclick="document.getElementById('avatar-upload').click()">上传头像</button>
+        </div>
+        <div class="user-info">
+            <h2 id="username-display" th:text="${user.username}"></h2>
+            <p class="description" id="description-display" th:text="${user.description}"></p>
+            <p class="contact" th:text="${user.phone}"></p>
+        </div>
+        <div class="action-buttons">
+            <button class="edit" onclick="editProfile()">编辑信息</button>
+            <button class="logout" onclick="logout()">退出登录</button>
+            <button class="change-password" onclick="showChangePassword()">修改密码</button>
+        </div>
+    </div>
+
+    <!-- 编辑个人信息的表单 -->
+    <div id="edit-form" style="display: none;">
+        <label for="edit-username">用户名：</label>
+        <input type="text" id="edit-username" value="" placeholder="请输入用户名">
+        <label for="edit-description">个人简介：</label>
+        <textarea id="edit-description" placeholder="请输入个人简介"></textarea>
+        <button onclick="saveProfile()">保存修改</button>
+    </div>
+
+    <!-- 修改密码的表单 -->
+    <div class="password" id="change-password-form" style="display: none;">
+        <label for="old-password">旧密码：</label>
+        <input type="password" id="old-password" placeholder="请输入旧密码">
+        <label for="new-password">新密码：</label>
+        <input type="password" id="new-password" placeholder="请输入新密码">
+        <button onclick="changePassword()">保存新密码</button>
+    </div>
+
+    <!-- 博客展示模块 -->
+    <div class="blogs">
+        <h3>我发表的博客</h3>
+        <div class="blog-list">
+            <!-- 遍历博客列表 -->
+            <div class="blog-item" th:each="blog : ${blogList}">
+                <h4><a th:href="@{/blog/{id}(id=${blog.id})}" th:text="${blog.title}"></a></h4>
+                <p class="date" th:text="${#dates.format(blog.createTime, 'yyyy-MM-dd HH:mm:ss')}">发布日期</p>
+                <p class="summary">
+                    <span th:text="${blog.content}"></span>
+                    <a th:href="@{/blog/{id}(id=${blog.id})}" ></a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    // 显示修改密码表单
+    function showChangePassword() {
+        document.getElementById('change-password-form').style.display = 'block';
+    }
+
+    // 修改密码
+    function changePassword() {
+        var oldPassword = document.getElementById('old-password').value;
+        var newPassword = document.getElementById('new-password').value;
+
+        $.ajax({
+            url: '[[@{/auth/change-password}]]',  // 确保路径正确
+            method: 'POST',
+            contentType: 'application/json',  // 关键：让后端知道是 JSON
+            data: JSON.stringify({
+                oldPassword: oldPassword,
+                newPassword: newPassword
+            }),
+            success: function(response) {
+                alert('密码修改成功！');
+                document.getElementById('change-password-form').style.display = 'none';
+                $("#old-password").val("");
+                $("#new-password").val("");
+            },
+            error: function(xhr, status, error) {
+                console.error('Error changing password:', error);
+                console.error('Response Text:', xhr.responseText); // 打印后端返回的错误信息
+                alert('修改密码失败: ' + xhr.responseText);
+            }
+        });
+    }
+
+
+    function getCookie(name) {
+        var cookieArr = document.cookie.split(";");  // 获取所有 cookie 并按分号分隔
+        for (var i = 0; i < cookieArr.length; i++) {
+            var cookie = cookieArr[i].trim();  // 去掉每个 cookie 的多余空格
+            // 如果找到了指定名称的 cookie，返回其值
+            if (cookie.indexOf(name + "=") == 0) {
+                return cookie.substring(name.length + 1, cookie.length);  // 返回 cookie 值
+            }
+        }
+        return null;  // 如果找不到指定名称的 cookie，返回 null
+    }
+    // 获取 cookie 中的用户 ID
+    var userId = getCookie('userId');
+    if (userId) {
+        // 使用 AJAX 请求获取用户信息
+        $.ajax({
+            url: "[[@{/auth/myself}]]",  // 请求的 URL
+            method: 'GET',  // 请求方法
+            data: { id: userId },  // 传递给后端的参数
+            contentType:"application/json",
+            success: function(data) {
+
+            },
+            error: function(xhr, status, error) {
+                // 请求失败时的错误处理
+                console.error('Error fetching user data:', error);
+                alert('无法获取用户数据，请稍后再试。');
+            }
+        });
+    } else {
+        alert('未找到用户 ID，可能没有登录！');
+    }
+
+    // 上传头像
+    function uploadAvatar() {
+        var formData = new FormData();
+        var avatarFile = document.getElementById('avatar-upload').files[0];
+        formData.append("avatar", avatarFile);
+
+        $.ajax({
+            url: '[[@{/auth/upload-avatar}]]',  // 上传头像的后端 URL
+            method: 'POST',
+            data: formData,
+            contentType: false, // 不设置 content-type
+            processData: false, // 不处理 data
+            success: function(response) {
+                if (response.responseCode == 200) {
+                    document.getElementById('avatar-img').src ="/JiLin_STP" + response.newImageUrl; // 更新头像
+                    alert('头像上传成功!');
+                    // document.getElementById('avatar-img').src = response.newImageUrl + "?t=" + new Date().getTime(); // 加时间戳防止缓存
+                } else {
+                    alert('头像上传失败，请重试！');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error uploading avatar:', error);
+                alert('上传头像时出错，请稍后再试。');
+            }
+        });
+    }
+
+    // 编辑个人信息
+    function editProfile() {
+        document.getElementById('edit-form').style.display = 'block';
+        document.getElementById('edit-username').value = document.getElementById('username-display').innerText;
+        document.getElementById('edit-description').value = document.getElementById('description-display').innerText;
+    }
+
+    // 保存个人信息
+    function saveProfile() {
+        var updatedUsername = document.getElementById('edit-username').value;
+        var updatedDescription = document.getElementById('edit-description').value;
+
+        $.ajax({
+            url: '[[@{/auth/update-profile}]]',  // 更新个人信息的后端 URL
+            method: 'POST',
+            data: {
+                username: updatedUsername,
+                description: updatedDescription
+            },
+            success: function(response) {
+                if (response.responseCode == 200) {
+                    document.getElementById('username-display').innerText = updatedUsername;
+                    document.getElementById('description-display').innerText = updatedDescription;
+                    alert('信息更新成功！');
+                    document.getElementById('edit-form').style.display = 'none'; // 隐藏编辑表单
+                } else {
+                    alert('信息更新失败，请重试！');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating profile:', error);
+                alert('更新信息时出错，请稍后再试。');
+            }
+        });
+    }
+
+
+    //我的博客
+    $(document).ready(function () {
+        let blogListContainer = $('.blog-list');
+        $.ajax({
+            url: "[[@{/auth/list}]]", // 后端接口
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                let blogListHtml = "";
+                $.each(data.blogs, function (index, blog) {
+                    let shortContent = blog.content.length > 100 ? blog.content.substring(0, 100) + '...' : blog.content;
+                    blogListHtml += `
+                            <div class="blog-item">
+                                <h4><a href="/JiLin_STP/auth/blog/${blog.id}">${blog.title}</a></h4>
+                                <p class="date">${new Date(blog.createTime).toLocaleDateString()}</p>
+                                <p class="summary">${shortContent}
+                                    <a href="/auth/blog/${blog.id}" ></a>
+                                </p>
+                            </div>
+                        `;
+                });
+                blogListContainer.append(blogListHtml);
+                $("#blogListContainer").html(blogListHtml);
+            },
+            error: function () {
+                $("#blogListContainer").html("<p>加载博客失败，请稍后重试。</p>");
+            }
+        });
+    });
+
+    // 退出登录
+    function logout() {
+        $.ajax({
+            url: '[[@{/auth/logout}]]',  // 退出登录的后端 URL
+            method: 'POST',
+            success: function(response) {
+                // if (response.responseCode == 200) {
+                    alert('已退出登录');
+                    window.location.href = '/JiLin_STP/login';  // 退出后跳转到登录页面
+                // } else {
+                //     alert('退出登录失败，请重试！');
+                // }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error logging out:', error);
+                alert('退出登录时出错，请稍后再试。');
+            }
+        });
+    }
+</script>
+</body>
+</html>

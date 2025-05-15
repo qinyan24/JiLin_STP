@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${spot.name}">景点详情</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" th:href="@{/css/scenic_spot.css}">
+  <!-- 引入 Bootstrap 样式 -->
+  <link th:href="@{/css/bscss/bootstrap.css}" rel="stylesheet">
+  <script th:src="@{/js/bsjs/bootstrap.bundle.js}"></script>
+  <script th:src="@{/js/bsjs/bootstrap.js}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">吉游智行</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/homepage}" id="home-link">主页</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/summary_attractions}">旅游景点汇总</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{createBlog}">发表博客</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" th:href="@{/myself1}" >我的</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container spot-container">
+  <div class="spot-header">
+    <!-- 图片 -->
+    <img th:src="@{${spot.imageUrl}}" alt="景点图片">
+
+    <!-- 景点信息 -->
+    <div class="spot-info">
+      <h1 th:text="${spot.name}">景点名称</h1>
+      <p><strong>票价:</strong> <span th:text="${spot.ticketPrice}">票价</span></p>
+      <p><strong>开放时间:</strong> <span th:text="${spot.openTime}">开放时间</span></p>
+      <p><strong>景点位置:</strong> <span th:text="${spot.openTime}">景点位置</span></p>
+    </div>
+  </div>
+
+  <!-- 景点介绍 -->
+  <div class="spot-info">
+    <h3>景点介绍:</h3>
+    <p th:text="${spot.text}">景点介绍内容</p>
+  </div>
+  </div>
+
+  <!-- 评论区 -->
+  <div class="comment-section">
+    <h3>网友评论</h3>
+
+    <!-- 评论展示 -->
+    <div id="comments-container">
+      <div class="comment-card"  th:each="comment : ${comments}">
+        <p><strong th:text="${comment.username}">用户名</strong>: <span th:text="${comment.content}">评论内容</span></p>
+        <p>< th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd HH:mm:ss')}">发表日期</p>
+      </div>
+    </div>
+
+    <!-- 评论表单 -->
+    <div class="comment-form">
+      <h4>留下您的评论：</h4>
+      <form id="comment-form">
+        <textarea id="comment-content" class="form-control" rows="4" placeholder="请输入您的评论" required></textarea>
+        <button type="submit" class="btn btn-primary mt-3">提交评论</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+  $(document).ready(function () {
+    // 提交评论
+    $('#comment-form').submit(function (e) {
+      e.preventDefault();
+      var content = $('#comment-content').val();
+      var spotId = [[${spot.id}]]; // 将spot的ID传到js
+
+      if (content) {
+        $.ajax({
+          type: 'POST',
+          url: '[[@{/submit-comment}]]',
+          data: {
+            content: content,
+            spotId: spotId
+          },
+          success: function () {
+            // 评论提交成功后清空输入框并刷新评论
+            $('#comment-content').val('');
+            loadComments();
+          },
+          error: function () {
+            alert('评论提交失败，请稍后再试');
+          }
+        });
+      }
+    });
+
+    // 加载评论
+    function loadComments() {
+      var spotId = [[${spot.id}]]; // 将spot的ID传到js
+      $.get('/JiLin_STP/scenic-spot/' + spotId + '/comments', function (data) {
+        var commentsHtml = '';
+        debugger;
+        if(data.length === 0){
+          commentsHtml += '<div class="comment-card mb-3 p-3 border rounded">';
+          commentsHtml += '<p><strong>暂无用户评论</strong> </p>';
+          commentsHtml += '</div>';
+        }
+        else {
+          data.forEach(function (comment) {
+            // 处理评论的显示
+            commentsHtml += '<div class="comment-card">';
+            commentsHtml += '<p><strong>' + comment.username + ':</strong> ' + comment.content + '</p>';
+            commentsHtml += '<p><strong>' + new Date(comment.createdAt).toLocaleString() + '</strong></p>';  // 格式化日期显示
+            commentsHtml += '</div>';
+          });
+        }
+        $('#comments-container').html(commentsHtml);
+      });
+    }
+
+    // 初始化加载评论
+    loadComments();
+  });
+</script>
+
+</body>
+</html>
